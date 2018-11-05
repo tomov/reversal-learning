@@ -21,7 +21,10 @@ function gen_data(filename, nsubj, nsesh, nblocks, ntrials)
                     else
                         r = [0 1];
                     end
-                    ch = randi([1 2]);
+
+                    p = r * 0.8; % choose better one 80% of the time
+                    p(p == 0) = 1 - sum(p);
+                    ch = find(mnrnd(1, p));
 
                     subj = [subj; s];
                     sesh = [sesh; se];

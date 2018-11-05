@@ -2,7 +2,7 @@ function latents = qlearn(data, param)
 
     if ~exist('param', 'var')
         alpha = 0.1; % learning rate
-        tau = 10; % softmax temperature
+        tau = 1; % softmax temperature
         Q0 = 0;
     else
         alpha = param(1);
@@ -17,6 +17,10 @@ function latents = qlearn(data, param)
     for i = 1:length(data.cue)
         s = data.cue(i);
 
+        if i > 1 && data.sesh(i - 1) ~= data.sesh(i)
+            Q = ones(S,A) * Q0; % reset after each session
+        end
+
         p = softmax(Q(s,:), tau);
         a = find(mnrnd(1, p));
 
@@ -24,7 +28,8 @@ function latents = qlearn(data, param)
         PE = reward - Q(s,a);
         Q(s,a) = Q(s,a) + alpha * PE;
 
-        latents.Q(:,:,i) = Q;
+        latents.allQ(:,:,i) = Q;
+        latents.Q(i,:) = Q(s,:);
         latents.reward(i) = reward;
         latents.PE(i) = PE;
         latents.p(i,:) = p;
