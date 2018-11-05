@@ -5,12 +5,14 @@ clear all;
 data = load_data('data.csv');
 
 for s = 1:length(data)
-    latents(s) = qlearn(data(s));
+    %latents(s) = qlearn(data(s));
+    %latents(s) = bayes1(data(s));
+    latents(s) = bayes2(data(s));
 end
 
 subj = 1;
 seshs = 1;
-blocks = 1:3;
+blocks = 1:5;
 which = ismember(data(subj).sesh, seshs) & ismember(data(subj).block, blocks);
 
 figure;
@@ -33,3 +35,5 @@ subplot(3,1,3);
 plot(latents(subj).Q(which, :));
 legend({'Q(1)', 'Q(2)'});
 title('action values');
+
+fprintf('Total reward: %.2f\n', sum(latents(subj).reward(which)));
