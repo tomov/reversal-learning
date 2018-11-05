@@ -26,14 +26,13 @@ function latents = bayes2(data, param)
 
         if i == 1 || (i > 1 && data.sesh(i - 1) ~= data.sesh(i))
             % reset for each session
-            alpha = ones(S,1) * alpha0;
-            beta = ones(S,1) * beta0;
+            alpha = ones(1,S) * alpha0;
+            beta = ones(1,S) * beta0;
         end
 
         [P, ~] = betastat(alpha, beta); % P(r|s,a=1) = mean of beta for s
-        Q(:,1) = P; % Q(s,a=1) = P(r|s,a=1)
-        Q(:,2) = 1 - P; % Q(s,a=2) = P(r|s,a=2) = 1 - P(r|s,a=1)
-        
+        Q(:,1) = P'; % Q(s,a=1) = P(r|s,a=1)
+        Q(:,2) = 1 - P'; % Q(s,a=2) = P(r|s,a=2) = 1 - P(r|s,a=1)
 
         p = softmax(Q(s,:), tau);
         a = find(mnrnd(1, p));
@@ -50,7 +49,7 @@ function latents = bayes2(data, param)
         end
 
         latents.allQ(:,:,i) = Q;
-        latents.alpha(i,:) = alpha';
+        latents.alpha(i,:) = alpha;
         latents.beta(i,:) = beta';
         latents.Q(i,:) = Q(s,:);
         latents.reward(i) = reward;

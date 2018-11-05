@@ -7,8 +7,10 @@ data = load_data('data.csv');
 for s = 1:length(data)
     %latents(s) = qlearn(data(s));
     %latents(s) = bayes1(data(s));
-    latents(s) = bayes2(data(s));
+    %latents(s) = bayes2(data(s));
 end
+
+latents = bayes2struct(data(1));
 
 subj = 1;
 seshs = 1;

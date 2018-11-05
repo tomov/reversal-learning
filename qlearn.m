@@ -1,7 +1,7 @@
 function latents = qlearn(data, param)
 
     % simple Q-learning (with optional decay towards Q0)
-    % learn a separate Q-value for each (s,a)pair
+    % learn a separate Q-value for each (s,a) pair
     % reset Q-values for each session
     %
 
