@@ -6,8 +6,8 @@ function latents = bayes2struct(data, param)
         beta0 = 1; % beta param
         tau = 1; % softmax temperature
         decay = 0; % decay rate
-        alpha = 5; % sCRP concentration parameter
-        lambda = 0.5; % sCRP stickiness parameter
+        alpha = 25; % sCRP concentration parameter
+        lambda = 25; % sCRP stickiness parameter
     else
         alpha0 = param(1);
         beta0 = param(2);
@@ -33,7 +33,7 @@ function latents = bayes2struct(data, param)
     for i = 1:length(data.cue)
         s = data.cue(i);
         i
-        save shit.mat;
+        save shit_pre.mat;
 
         % prior
         particles = fork(particles, alpha, lambda, K);
@@ -56,20 +56,29 @@ function latents = bayes2struct(data, param)
         end
 
         % update
+        lik = [];
         if (reward == 1 && a == 1) || (reward == 0 && a == 2)
             % a = 1 was rewarding
             for j = 1:length(particles)
                 h = particles(j);
-                particles(j).w = betastat(h.alpha(h.e(end),s), h.beta(h.e(end),s)) * h.w;
+                lik(j) = betastat(h.alpha(h.e(end),s), h.beta(h.e(end),s));
+                particles(j).w = lik(j) * h.w;
                 particles(j).alpha(h.e(end),s) = particles(j).alpha(h.e(end),s) + 1;
             end
         else
             % a = 2 was rewarding
             for j = 1:length(particles)
                 h = particles(j);
-                particles(j).w = (1 - betastat(h.alpha(h.e(end),s), h.beta(h.e(end),s))) * h.w;
+                lik(j) = (1 - betastat(h.alpha(h.e(end),s), h.beta(h.e(end),s)));
+                particles(j).w = lik(j) * h.w;
                 particles(j).beta(h.e(end),s) = particles(j).beta(h.e(end),s) + 1;
             end
+        end
+
+        save shit_post;
+
+        if i == 60
+            slkjfdlskd
         end
 
         % pick top particles, if too many
