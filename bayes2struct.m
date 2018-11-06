@@ -33,10 +33,10 @@ function latents = bayes2struct(data, param)
     for i = 1:length(data.cue)
         s = data.cue(i);
         i
-        save shit_pre.mat;
 
         % prior
         particles = fork(particles, alpha, lambda, K);
+        latents.prior(i,:) = post(particles, K);
 
         % Q-values
         Q = computeQ(particles, S);
@@ -75,12 +75,6 @@ function latents = bayes2struct(data, param)
             end
         end
 
-        save shit_post;
-
-        if i == 60
-            slkjfdlskd
-        end
-
         % pick top particles, if too many
         if length(particles) > maxh
             [~,I] = sort([particles.w], 'descend');
@@ -93,7 +87,8 @@ function latents = bayes2struct(data, param)
         % logging
         latents.allQ(:,:,i) = Q;
         latents.Q(i,:) = Q(s,:);
-        latents.particles{i} = particles;
+        %latents.particles{i} = particles;
+        latents.P(i,:) = post(particles, K);
         latents.reward(i) = reward;
         latents.PE(i) = PE;
         latents.p(i,:) = p;
@@ -170,4 +165,14 @@ function Q = computeQ(particles, S)
     end
 
     Q(:,2) = 1 - Q(:,1);
+end
+
+function P = post(particles, K)
+    P = zeros(1,K);
+    for j = 1:length(particles)
+        h = particles(j);
+
+        P(h.e(end)) = P(h.e(end)) + h.w;
+    end
+    P = P / sum(P);
 end
